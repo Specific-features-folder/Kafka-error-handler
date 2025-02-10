@@ -7,6 +7,7 @@ import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.clients.consumer.Consumer;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
+import org.apache.kafka.clients.consumer.ConsumerRecords;
 import org.apache.kafka.common.TopicPartition;
 import org.apache.kafka.common.errors.RecordDeserializationException;
 import org.springframework.kafka.listener.CommonErrorHandler;
@@ -41,6 +42,36 @@ public class KafkaCommonErrorHandler implements CommonErrorHandler {
         this.dataSource = dataSource;
         this.transactionTemplate = transactionTemplate;
         this.kafkaListenerErrorRepository = kafkaListenerErrorRepository;
+    }
+
+
+    @Override
+    public <K, V> ConsumerRecords<K, V> handleBatchAndReturnRemaining(Exception thrownException,
+                                                                      ConsumerRecords<?, ?> data,
+                                                                      Consumer<?, ?> consumer,
+                                                                      MessageListenerContainer container,
+                                                                      Runnable invokeListener) {
+        if (isDatabaseAvailable()) {
+            System.out.println("Произошла ошибка при наличии подключения к БД при обработке батча из партиций: "
+                    + data.partitions());
+            try {
+                transactionTemplate.executeWithoutResult((transactionStatus) -> {
+                    for (ConsumerRecord<?, ?> record : data)
+                        saveKafkaListenerError(thrownException, record.value(), record.topic());
+                });
+                System.out.println("Записи из батча с ошибкой успешно сохранены");
+                return ConsumerRecords.empty();
+            } catch (Exception e) {
+                System.out.println("При сохранении записей из батча с ошибкой возникла ошибка." +
+                        "Записи из батча будут повторно поставлены на обработку. Ошибка: " + e);
+                return (ConsumerRecords<K, V>) data;
+            }
+        }
+        else {
+            System.out.println("Произошла ошибка при отсутствии подключения к БД при обработке батча из партиций: "
+                    + data.partitions() + ". Записи из батча будут повторно поставлены на обработку");
+            return (ConsumerRecords<K, V>) data;
+        }
     }
 
 

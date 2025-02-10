@@ -1,6 +1,5 @@
 package com.barabanov;
 
-import com.sun.istack.NotNull;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
@@ -43,7 +42,7 @@ public class MyFailedRecordTracker implements RecoveryStrategy {
 
 
     MyFailedRecordTracker(BiConsumer<ConsumerRecord<?, ?>, Exception> recoverer,
-                          @NotNull BackOff backOff,
+                          BackOff backOff,
                           BackOffHandler backOffHandler) {
 
         Assert.notNull(backOff, "'backOff' cannot be null");

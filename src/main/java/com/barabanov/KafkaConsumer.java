@@ -6,6 +6,7 @@ import org.springframework.stereotype.Component;
 
 import javax.sql.DataSource;
 import java.sql.SQLException;
+import java.util.List;
 
 @Component
 @RequiredArgsConstructor
@@ -13,15 +14,25 @@ public class KafkaConsumer {
 
     private final DataSource dataSource;
 
-    @KafkaListener(topics = "my-topic",
-            properties = "spring.json.value.default.type=com.barabanov.Lada")
-    public void listenMsg(Lada lada) {
-        if (!isDatabaseAvailable())
-            throw new RuntimeException("Ошибка из-за отключенной БД");
 
-        if (lada.model().equals("business-error"))
-            throw new RuntimeException("Бизнесовая ошибка");
-        System.out.println("Считано сообщение из топика: " + lada.toString());
+    @KafkaListener(topics = "my-topic",
+            properties = "spring.json.value.default.type=com.barabanov.Lada",
+            batch = "true")
+    public void listenMsg(List<Lada> listOfLadas) {
+//        if (!isDatabaseAvailable())
+//            throw new RuntimeException("Ошибка из-за отключенной БД");
+
+        System.out.println("Считан батч размером: " + listOfLadas.size());
+        System.out.println("Считаны лады моделей: " + listOfLadas.stream()
+                .map(Lada::model)
+                .toList());
+
+        listOfLadas.stream()
+                .filter(lada -> "business-error".equals(lada.model()))
+                .findAny()
+                .ifPresent(ladaError -> {
+                    throw new RuntimeException("Бизнесовая ошибка");
+                });
     }
 
 
