@@ -1,8 +1,9 @@
-package com.barabanov;
+package com.barabanov.specific.features;
 
 import java.time.Instant;
 
-public record Lada(
+public record Car(
+        String brand,
         String model,
         Instant createDate) {
 }

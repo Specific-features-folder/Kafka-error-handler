@@ -1,4 +1,4 @@
-package com.barabanov;
+package com.barabanov.specific.features.kafka;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -22,7 +22,7 @@ import java.util.function.BiConsumer;
 
 @Slf4j
 @RequiredArgsConstructor
-public class MyFailedRecordTracker implements RecoveryStrategy {
+public class FailedRecordTracker implements RecoveryStrategy {
 
     private final ThreadLocal<Map<TopicPartition, FailedRecord>> failures = new ThreadLocal<>(); // intentionally not static
 
@@ -35,15 +35,15 @@ public class MyFailedRecordTracker implements RecoveryStrategy {
     private final BackOffHandler backOffHandler;
 
 
-    MyFailedRecordTracker(BiConsumer<ConsumerRecord<?, ?>, Exception> recoverer, BackOff backOff) {
+    FailedRecordTracker(BiConsumer<ConsumerRecord<?, ?>, Exception> recoverer, BackOff backOff) {
 
         this(recoverer, backOff, null);
     }
 
 
-    MyFailedRecordTracker(BiConsumer<ConsumerRecord<?, ?>, Exception> recoverer,
-                          BackOff backOff,
-                          BackOffHandler backOffHandler) {
+    FailedRecordTracker(BiConsumer<ConsumerRecord<?, ?>, Exception> recoverer,
+                        BackOff backOff,
+                        BackOffHandler backOffHandler) {
 
         Assert.notNull(backOff, "'backOff' cannot be null");
         if (recoverer == null) {
