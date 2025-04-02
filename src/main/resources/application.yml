@@ -1,0 +1,15 @@
+spring:
+  datasource:
+    password: pass
+    username: postgres
+    url: jdbc:postgresql://localhost:5432/kafka_error_handler_test
+
+  kafka:
+    producer:
+      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+    consumer:
+      value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      group-id: abc
+    bootstrap-servers: localhost:29092

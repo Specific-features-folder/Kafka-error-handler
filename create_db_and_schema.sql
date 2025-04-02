@@ -1,0 +1,1 @@
+CREATE DATABASE kafka_error_handler_test;
