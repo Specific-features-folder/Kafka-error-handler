@@ -1,11 +1,15 @@
 package com.barabanov.specific.features.kafka;
 
+import com.barabanov.specific.features.Bicycle;
+import com.barabanov.specific.features.BicycleHandler;
 import com.barabanov.specific.features.Car;
 import com.barabanov.specific.features.CarHandler;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.stereotype.Component;
+
+import java.util.List;
 
 import static com.barabanov.specific.features.kafka.KafkaConfiguration.CONTAINER_POST_PROCESSOR_COMMON_ERROR_HANDLER_BEAN_NAME;
 
@@ -15,14 +19,29 @@ import static com.barabanov.specific.features.kafka.KafkaConfiguration.CONTAINER
 public class KafkaConsumer {
 
     private final CarHandler carHandler;
+    private final BicycleHandler bicycleHandler;
 
 
     @KafkaListener(topics = "car-topic",
             properties = "spring.json.value.default.type=com.barabanov.specific.features.Car",
             containerPostProcessor = CONTAINER_POST_PROCESSOR_COMMON_ERROR_HANDLER_BEAN_NAME)
-    public void listenMsg(Car carMsg) {
+    public void listenCarMsg(Car carMsg) {
         log.info("Получена машина: {}", carMsg);
         carHandler.handlerCar(carMsg);
+    }
+
+
+    @KafkaListener(topics = "bicycle-topic",
+            properties = "spring.json.value.default.type=com.barabanov.specific.features.Bicycle",
+            containerPostProcessor = CONTAINER_POST_PROCESSOR_COMMON_ERROR_HANDLER_BEAN_NAME,
+            batch = "true")
+    public void listenBicycleMsgBatch(List<Bicycle> bicycleBatch) {
+        log.info("Получены велосипеды моделей: {}",
+                bicycleBatch.stream()
+                        .map(Bicycle::model)
+                        .toList());
+
+        bicycleHandler.handleBicycleBatch(bicycleBatch);
     }
 
 }
