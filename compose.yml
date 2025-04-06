@@ -1,6 +1,5 @@
 # для подключения кафка контейнеров к локальной машине не забыть поправить host файл, ведь подключения будут с таким же хостом, что и в KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS
 
-version: "3.9"
 services:
   zookeeper:
     container_name: zookeeper
