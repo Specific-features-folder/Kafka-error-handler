@@ -11,8 +11,6 @@ import org.springframework.stereotype.Component;
 
 import java.util.List;
 
-import static com.barabanov.specific.features.kafka.KafkaConfiguration.CONTAINER_POST_PROCESSOR_COMMON_ERROR_HANDLER_BEAN_NAME;
-
 @Slf4j
 @RequiredArgsConstructor
 @Component
@@ -24,7 +22,7 @@ public class KafkaConsumer {
 
     @KafkaListener(topics = "car-topic",
             properties = "spring.json.value.default.type=com.barabanov.specific.features.Car",
-            containerPostProcessor = CONTAINER_POST_PROCESSOR_COMMON_ERROR_HANDLER_BEAN_NAME)
+            errorHandler = KafkaListenerErrorHandler.KAFKA_LISTENER_ERROR_HANDLER_BEAN_NAME)
     public void listenCarMsg(Car carMsg) {
         log.info("Получена машина: {}", carMsg);
         carHandler.handlerCar(carMsg);
@@ -33,7 +31,7 @@ public class KafkaConsumer {
 
     @KafkaListener(topics = "bicycle-topic",
             properties = "spring.json.value.default.type=com.barabanov.specific.features.Bicycle",
-            containerPostProcessor = CONTAINER_POST_PROCESSOR_COMMON_ERROR_HANDLER_BEAN_NAME,
+            errorHandler = KafkaListenerErrorHandler.KAFKA_LISTENER_ERROR_HANDLER_BEAN_NAME,
             batch = "true")
     public void listenBicycleMsgBatch(List<Bicycle> bicycleBatch) {
         log.info("Получены велосипеды моделей: {}",

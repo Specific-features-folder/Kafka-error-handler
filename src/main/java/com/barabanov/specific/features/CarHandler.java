@@ -2,8 +2,6 @@ package com.barabanov.specific.features;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.context.annotation.Bean;
-import org.springframework.kafka.listener.KafkaListenerErrorHandler;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
