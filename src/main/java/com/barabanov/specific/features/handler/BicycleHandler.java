@@ -1,5 +1,7 @@
-package com.barabanov.specific.features;
+package com.barabanov.specific.features.handler;
 
+import com.barabanov.specific.features.Bicycle;
+import com.barabanov.specific.features.utils.DatabaseHelper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;

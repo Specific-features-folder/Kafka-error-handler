@@ -3,6 +3,9 @@ spring:
     password: pass
     username: postgres
     url: jdbc:postgresql://localhost:5432/kafka_error_handler_test
+  jpa:
+    properties:
+      hibernate.default_schema: test
 
   kafka:
     producer:

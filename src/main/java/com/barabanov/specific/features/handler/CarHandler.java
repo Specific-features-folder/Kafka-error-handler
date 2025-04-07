@@ -1,9 +1,9 @@
-package com.barabanov.specific.features;
+package com.barabanov.specific.features.handler;
 
+import com.barabanov.specific.features.Car;
+import com.barabanov.specific.features.utils.DatabaseHelper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.context.annotation.Bean;
-import org.springframework.kafka.listener.KafkaListenerErrorHandler;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
