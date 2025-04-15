@@ -1,8 +1,8 @@
 package com.barabanov.specific.features.kafka;
 
 import com.barabanov.specific.features.Bicycle;
-import com.barabanov.specific.features.handler.BicycleHandler;
 import com.barabanov.specific.features.Car;
+import com.barabanov.specific.features.handler.BicycleHandler;
 import com.barabanov.specific.features.handler.CarHandler;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -22,7 +22,7 @@ public class KafkaConsumer {
     private final BicycleHandler bicycleHandler;
 
 
-    @KafkaListener(topics = "car-topic",
+    @KafkaListener(topics = "${kafka-topics.car-topic}",
             properties = "spring.json.value.default.type=com.barabanov.specific.features.Car",
             containerPostProcessor = CONTAINER_POST_PROCESSOR_COMMON_ERROR_HANDLER_BEAN_NAME)
     public void listenCarMsg(Car carMsg) {
@@ -31,7 +31,7 @@ public class KafkaConsumer {
     }
 
 
-    @KafkaListener(topics = "bicycle-topic",
+    @KafkaListener(topics = "${kafka-topics.bicycle-topic}",
             properties = "spring.json.value.default.type=com.barabanov.specific.features.Bicycle",
             containerPostProcessor = CONTAINER_POST_PROCESSOR_COMMON_ERROR_HANDLER_BEAN_NAME,
             batch = "true")

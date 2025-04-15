@@ -4,9 +4,12 @@ CREATE DATABASE kafka_error_handler_test;
 
 CREATE SCHEMA test;
 
-CREATE TABLE test.raw_message(
-    id BIGSERIAL PRIMARY KEY,
-    creation_date timestamptz NOT NULL,
-    error_text text,
-    msg_json jsonb
+CREATE TABLE test.raw_message
+(
+    id                BIGSERIAL PRIMARY KEY,
+    creation_date     timestamptz NOT NULL,
+    last_processing_date timestamptz NOT NULL,
+    error_text        TEXT,
+    msg_json          jsonb,
+    topic_name        VARCHAR(254)
 );

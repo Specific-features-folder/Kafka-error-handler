@@ -18,4 +18,13 @@ public class JsonHelper {
             throw new RuntimeException("При преобразовании obj в json возникла ошибка!", e);
         }
     }
+
+
+    public <T> T fromJson(String json, Class<T> clazz) {
+        try {
+            return objectMapper.readValue(json, clazz);
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException("При преобразовании json в object возникла ошибка!", e);
+        }
+    }
 }

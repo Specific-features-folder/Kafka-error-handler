@@ -7,8 +7,10 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
-import org.hibernate.annotations.JdbcType;
-import org.hibernate.type.descriptor.jdbc.JsonJdbcType;
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.type.SqlTypes;
+
+import java.time.OffsetDateTime;
 
 
 @Entity
@@ -20,8 +22,12 @@ import org.hibernate.type.descriptor.jdbc.JsonJdbcType;
 @SuperBuilder
 public class RawMsgEntity extends AbstractEntityBase {
 
+    private String topicName;
+
     private String errorText;
 
-    @JdbcType(JsonJdbcType.class)
+    @JdbcTypeCode(SqlTypes.JSON)
     private String msgJson;
+
+    private OffsetDateTime lastProcessingDate;
 }

@@ -22,7 +22,7 @@ import org.springframework.util.backoff.FixedBackOff;
 @Component
 public class KafkaCommonErrorHandler implements CommonErrorHandler {
 
-    private final static long MSG_PROCESSING_ATTEMPTS = 0L;
+    private final static long MSG_PROCESSING_ATTEMPTS = 3L;
     private final RecoveryStrategy recoveryStrategy = new FailedRecordTracker(null, new FixedBackOff(0, MSG_PROCESSING_ATTEMPTS - 1));
     private final DatabaseHelper databaseHelper;
     private final RawMsgService rawMsgService;
@@ -39,7 +39,7 @@ public class KafkaCommonErrorHandler implements CommonErrorHandler {
                 data.count(), data.partitions());
         try {
             for (ConsumerRecord<?, ?> consumerRecord : data)
-                rawMsgService.saveAsRawMsg(consumerRecord.value(), thrownException);
+                rawMsgService.saveAsRawMsg(consumerRecord, thrownException);
         }
         catch (Exception e) {
             log.error("Ошибка при сохранении пропускаемых сообщений kafka как raw message. Батч не будет пропущен.", e);
@@ -62,7 +62,7 @@ public class KafkaCommonErrorHandler implements CommonErrorHandler {
                                 " Сообщение будет сохранено как RawMsg, а offset будет увеличен! Текущие значения Topic: {} Partition: {} Offset: {}",
                         MSG_PROCESSING_ATTEMPTS, record.topic(), record.partition(), record.offset());
                 try {
-                    rawMsgService.saveAsRawMsg(record.value(), exception);
+                    rawMsgService.saveAsRawMsg(record, exception);
                 } catch (Exception e) {
                     log.error("Ошибка при сохранении пропускаемого сообщения kafka как raw message. Сообщение не будет пропущено.", e);
                     return false;

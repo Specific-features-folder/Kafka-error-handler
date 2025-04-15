@@ -16,3 +16,7 @@ spring:
       key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
       group-id: abc
     bootstrap-servers: localhost:29092
+
+kafka-topics:
+  car-topic: car-topic
+  bicycle-topic: bicycle-topic
