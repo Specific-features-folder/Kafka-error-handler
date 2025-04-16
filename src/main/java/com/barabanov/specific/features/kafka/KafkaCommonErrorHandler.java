@@ -28,6 +28,15 @@ public class KafkaCommonErrorHandler implements CommonErrorHandler {
     private final RawMsgService rawMsgService;
 
 
+    /**
+     * Пропускать весь батч сообщений даже при бизнесовых ошибках видится слишком плохим вариантом. При обработке ошибок для батчей
+     * весь батч будет повторно поставляться на обработку до тех пор, пока не обработается успешно, независимо от того есть ли подключение к БД или нет.
+     * <p>
+     * В логике сервиса должна быть предусмотрена обработка ошибки при работе с батчем. Например, обрабатывать батч по одному сообщению в случае возникновения ошибки.
+     * А если возникает ошибка и по обработке по одному сообщению, то сохранять такое сообщение в отдельную таблицу, игнорировать или ещё как-либо обрабатывать.
+     * В любом случае обрабатывать батч нужно полностью без ошибок, если нет проблем с инфраструктурой (например, с БД) и в таком случае можно выкидывать ошибку,
+     * чтобы обработчик ещё раз поставил весь батч на обработку.
+     */
     @Override
     public <K, V> ConsumerRecords<K, V> handleBatchAndReturnRemaining(Exception thrownException,
                                                                       ConsumerRecords<?, ?> data,
@@ -35,17 +44,8 @@ public class KafkaCommonErrorHandler implements CommonErrorHandler {
                                                                       MessageListenerContainer container,
                                                                       Runnable invokeListener) {
 
-        log.error("При обработке батча сообщений из kafka размером {} из партиций {} произошла ошибка. Все сообщения батча будут сохранены как RawMsg",
-                data.count(), data.partitions());
-        try {
-            for (ConsumerRecord<?, ?> consumerRecord : data)
-                rawMsgService.saveAsRawMsg(consumerRecord, thrownException);
-        }
-        catch (Exception e) {
-            log.error("Ошибка при сохранении пропускаемых сообщений kafka как raw message. Батч не будет пропущен.", e);
-        }
-
-        return ConsumerRecords.empty();
+        log.error("При обработке батча сообщений из kafka из партиций {} произошла ошибка. Батч сообщений будет повторно передан обработчику", data.partitions());
+        return (ConsumerRecords<K, V>) data;
     }
 
 
@@ -59,7 +59,7 @@ public class KafkaCommonErrorHandler implements CommonErrorHandler {
         if (databaseHelper.isDatabaseAvailable()) {
             if (recoveryStrategy.recovered(record, exception, container, consumer)) {
                 log.error("Было предпринято {} попыток обработки сообщения при наличии подключения к БД." +
-                                " Сообщение будет сохранено как RawMsg, а offset будет увеличен! Текущие значения Topic: {} Partition: {} Offset: {}",
+                                " Сообщение будет сохранено как raw message, а offset будет увеличен! Текущие значения Topic: {} Partition: {} Offset: {}",
                         MSG_PROCESSING_ATTEMPTS, record.topic(), record.partition(), record.offset());
                 try {
                     rawMsgService.saveAsRawMsg(record, exception);

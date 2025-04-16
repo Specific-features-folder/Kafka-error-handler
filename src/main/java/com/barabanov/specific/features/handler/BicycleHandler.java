@@ -18,6 +18,8 @@ public class BicycleHandler {
 
 
     public void handleBicycleBatch(List<Bicycle> bicycleList) {
+        // В этом методе должен быть try / catch. В try обработка батча сообщений, в catch цикл, где для каждого элемента ещё один try / catch,
+        // где в try обработка одного сообщения, в catch - сохранение сообщения как raw message
 
         // эмуляция взаимодействия с БД
         if (!databaseHelper.isDatabaseAvailable())
