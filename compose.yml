@@ -65,3 +65,4 @@ services:
       - POSTGRES_USER=postgres
     volumes:
       - ./create_db_and_schema.sql:/docker-entrypoint-initdb.d/init.sql
+      - ./volumes/postgres/database:/var/lib/postgresql/data

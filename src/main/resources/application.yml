@@ -3,6 +3,9 @@ spring:
     password: pass
     username: postgres
     url: jdbc:postgresql://localhost:5432/kafka_error_handler_test
+  jpa:
+    properties:
+      hibernate.default_schema: test
 
   kafka:
     producer:
@@ -13,3 +16,7 @@ spring:
       key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
       group-id: abc
     bootstrap-servers: localhost:29092
+
+kafka-topics:
+  car-topic: car-topic
+  bicycle-topic: bicycle-topic

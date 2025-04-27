@@ -1,4 +1,4 @@
-package com.barabanov.specific.features;
+package com.barabanov.specific.features.utils;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
