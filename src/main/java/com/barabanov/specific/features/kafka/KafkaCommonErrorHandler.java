@@ -63,14 +63,11 @@ public class KafkaCommonErrorHandler implements CommonErrorHandler {
                         MSG_PROCESSING_ATTEMPTS, record.topic(), record.partition(), record.offset());
                 try {
                     rawMsgService.saveAsRawMsg(record, exception);
+                    return true;
                 } catch (Exception e) {
                     log.error("Ошибка при сохранении пропускаемого сообщения kafka как raw message. Сообщение не будет пропущено.", e);
                     return false;
                 }
-                //TODO: проверить, может быть достаточно просто true возвращать. без ручного управления оффсетом
-                consumer.seek(new TopicPartition(record.topic(), record.partition()), record.offset() + 1L);
-                consumer.commitSync();
-                return true;
             }
             log.error("Производятся повторные попытки обработки сообщения из кафки при наличии подключения к БД. Offset не будет увеличен." +
                             " Текущие значения Topic: {} Partition: {} Offset: {}",
